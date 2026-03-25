@@ -7,24 +7,21 @@ namespace ValidToDateToExcel
 {
     public class ExcelHandler
     {
-        private readonly static HttpClient httpClient = new HttpClient( new SocketsHttpHandler { PooledConnectionLifetime = TimeSpan.FromMinutes(2)});
-        private readonly string filePath;
-        private readonly int[] yearsToCheck = { 2025, 2024, 2026, 2023, 2022 };
-        private static readonly Dictionary<string, string> modelMap = new()
-        {
-            { "ПУЛЬС", "\"ПУЛЬС\"" },
-            { "ПУЛЬС СТК", "Пульс СТК" },
-            { "ФОБОС 1", "ФОБОС 1" }
-        };
-        public ExcelHandler(string filePath) 
-        {
-            this.filePath = filePath;
-        }
+        private static readonly HttpClient httpClient;
+        private static readonly int[] yearsToCheck = [2025, 2024, 2026, 2023, 2022];
+        private static readonly Dictionary<string, string> modelMap;
         static ExcelHandler()
         {
+            httpClient = new HttpClient(new SocketsHttpHandler { PooledConnectionLifetime = TimeSpan.FromMinutes(2) });
             httpClient.DefaultRequestHeaders.Add("User-Agent", "MyExcelParser/1.0");
+            modelMap = new()
+            {
+                { "ПУЛЬС", "\"ПУЛЬС\"" },
+                { "ПУЛЬС СТК", "Пульс СТК" },
+                { "ФОБОС 1", "ФОБОС 1" }
+            };
         }
-        public async Task FillValidToDates()
+        public async Task FillValidToDates(string filePath)
         {
             using var wb = new XLWorkbook(filePath);
             var ws = wb.Worksheet(1);

@@ -8,6 +8,7 @@ namespace ValidToDateToExcel
         static async Task Main(string[] args)
         {           
             Console.WriteLine("=== ValidToDateToExcel ===");
+            var excelHandler = new ExcelHandler();
             do
             {
                 Console.WriteLine();
@@ -29,16 +30,19 @@ namespace ValidToDateToExcel
                         {
                             Console.WriteLine("Файл не найден!");
                             continue;
-                        }
-                        Console.WriteLine("Выполнение.");
+                        }                        
                         try
                         {
-                            var excelHandler = new ExcelHandler(filePath);
-                            await excelHandler.FillValidToDates();
+                            Console.WriteLine("Выполнение.");
+                            await excelHandler.FillValidToDates(filePath);
                             Console.WriteLine();
                             Console.ForegroundColor = ConsoleColor.Green;
                             Console.WriteLine("Обработка завершена.");
                             Console.ResetColor();                           
+                        }
+                        catch (IOException ex) when (ex.Message.Contains("занят") || ex.Message.Contains("used by another process"))
+                        {
+                            Console.WriteLine("Файл открыт в другой программе. Закройте его и повторите попытку.");
                         }
                         catch (Exception ex)
                         {
